@@ -1,0 +1,30 @@
+# Archivos de compilación y binarios
+bin/
+obj/
+*.dll
+*.exe
+
+# Archivos de usuario de Visual Studio
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+# Configuración de Rider o VS Code
+.idea/
+.vscode/
+
+# Archivos de entorno
+.env
+*.env
+
+# Archivos de bases de datos locales
+*.mdf
+*.ldf
+
+# Archivos de logs
+*.log
+
+# Archivos generados por el sistema
+.DS_Store
+Thumbs.db
