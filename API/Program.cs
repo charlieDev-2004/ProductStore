@@ -22,6 +22,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJw
     options.Authority = builder.Configuration["KeycloakSettings:Authority"];
     options.Audience = builder.Configuration["KeycloakSettings:Audience"];
     options.RequireHttpsMetadata = false;
+
 });
 
 builder.Services.AddSwaggerGen(c =>

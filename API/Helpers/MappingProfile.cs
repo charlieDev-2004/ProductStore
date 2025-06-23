@@ -1,4 +1,4 @@
-using API.DTOs;
+using API.DTOs.Category;
 using AutoMapper;
 using Core.Models;
 

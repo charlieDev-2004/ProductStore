@@ -1,5 +1,5 @@
 using System.Security.Claims;
-using API.DTOs;
+using API.DTOs.Category;
 using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
