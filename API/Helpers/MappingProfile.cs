@@ -8,7 +8,8 @@ namespace API.Helpers
     {
         public MappingProfile()
         {
-            CreateMap<CategoryDto, Category>();
+            CreateMap<CategoryCreateDto, Category>();
+            CreateMap<Category, CategoryDto>();
         }
     }
 }

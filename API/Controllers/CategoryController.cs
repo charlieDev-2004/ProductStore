@@ -1,9 +1,11 @@
+using System.Security.Claims;
 using API.DTOs;
 using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
 using Core.Specifications;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace API.Controllers
@@ -21,8 +23,9 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateCategory([FromBody]CategoryDto categoryDto)
+        public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto categoryDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
@@ -36,11 +39,12 @@ namespace API.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery]CategoryQueryObject queryObject)
+        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryObject queryObject)
         {
             var spec = new CategorySpecification(queryObject.Name, queryObject.PageNumber, queryObject.PageSize);
-            var categories = await _categoryRepository.GetAll(spec);
+            var categories = _mapper.Map<List<CategoryDto>>(await _categoryRepository.GetAll(spec));
             return Ok(categories);
         }
+
     }
 }
