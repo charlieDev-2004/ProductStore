@@ -1,4 +1,3 @@
-using System.Security.Claims;
 using API.DTOs.Category;
 using API.Helpers.QueryObjects;
 using AutoMapper;
@@ -23,6 +22,35 @@ namespace API.Controllers
             _mapper = mapper;
         }
 
+         [HttpGet]
+        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryObject queryObject)
+        {
+            var spec = new CategorySpecification(queryObject.Name, queryObject.PageNumber, queryObject.PageSize);
+            var categoryPagedResult = await _categoryRepository.GetAll(spec);
+
+            var pagedResult = new PagedResult<CategoryDto>
+            {
+                CurrentPage = categoryPagedResult.CurrentPage,
+                PageSize = categoryPagedResult.PageSize,
+                TotalPages = categoryPagedResult.TotalPages,
+                Items = _mapper.Map<List<CategoryDto>>(categoryPagedResult.Items),
+            };
+
+            return Ok(pagedResult);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetCategoryById([FromRoute] int id)
+        {
+             var spec = new CategorySpecification(id);
+            var category = await _categoryRepository.GetById(spec);
+
+            if (category == null)
+                return NotFound(new { Message = $"La categoría con el id {id} no existe." });
+
+            return Ok(category);
+        }
+
         [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<IActionResult> CreateCategory([FromBody] CategoryCreateDto categoryDto)
@@ -35,15 +63,42 @@ namespace API.Controllers
             if (await _categoryRepository.Create(category))
                 return Ok(new { Message = "Categoría creada correctamente." });
 
-            return StatusCode(500, new { Message = "A ocuurido algún error al realizar la operación." });
+            return StatusCode(500, new { Message = "Ha ocuurido algún error al realizar la operación." });
         }
-
-        [HttpGet]
-        public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryObject queryObject)
+        
+        [Authorize(Roles="Admin")]
+        [HttpPut("{id}")]
+        public async Task<IActionResult> EditCategory([FromRoute] int id, [FromBody] CategoryCreateDto categoryDto)
         {
-            var spec = new CategorySpecification(queryObject.Name, queryObject.PageNumber, queryObject.PageSize);
-            var categories = _mapper.Map<List<CategoryDto>>(await _categoryRepository.GetAll(spec));
-            return Ok(categories);
+            if (!await _categoryRepository.Exist(id))
+                return NotFound(new { Message = $"La categoría con el id {id} no existe." });
+
+            if (!ModelState.IsValid)
+                return BadRequest(ModelState);
+
+            var category = _mapper.Map<Category>(categoryDto);
+            category.Id = id;
+
+            if (await _categoryRepository.Update(category))
+                return Ok(new { Message = "Categoría editada correctamente." });
+
+            return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
+        }
+        
+        [Authorize(Roles="Admin")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteCategory([FromRoute] int id)
+        {
+            var spec = new CategorySpecification(id);
+            var category = await _categoryRepository.GetById(spec);
+
+            if (category == null)
+                return NotFound(new { Message = $"La categoría con el id {id} no existe." });
+
+            if (await _categoryRepository.Delete(category))
+                return Ok(new { Message = "Categoría eliminada correctamente." });
+                 
+            return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
         }
 
     }

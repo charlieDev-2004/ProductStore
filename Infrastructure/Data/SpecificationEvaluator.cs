@@ -12,7 +12,7 @@ namespace Infrastructure.Data
             if (spec.Includes.Any())
                 query = spec.Includes.Aggregate(query, (current, include) => current.Include(include));
 
-            return query.Skip((spec.PageNumber - 1) * spec.PageSize).Take(spec.PageSize);
+            return query;
         }
     }
 }

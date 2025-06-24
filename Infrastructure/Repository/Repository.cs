@@ -1,4 +1,5 @@
 using Core.Interfaces;
+using Core.Models;
 using Core.Specifications;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;
@@ -33,14 +34,27 @@ namespace Infrastructure.Repository
             return await Entity.AnyAsync(e => EF.Property<int>(e,"Id") == id);
         }
 
-        public async Task<ICollection<T>> GetAll(ISpecification<T> spec)
+        public async Task<PagedResult<T>> GetAll(ISpecification<T> spec)
         {
-            return await SpecificationEvaluator<T>.GetQuery(Entity, spec).AsNoTracking().ToListAsync();
+            var pagedResult = new PagedResult<T>
+            {
+                CurrentPage = spec.PageNumber,
+                PageSize = spec.PageSize,
+                TotalPages = (int)Math.Ceiling((double)await Count() / (double)spec.PageSize),
+                Items = await SpecificationEvaluator<T>.GetQuery(Entity, spec).Skip((spec.PageNumber - 1) * spec.PageSize).Take(spec.PageSize).AsNoTracking().ToListAsync(),
+            };
+
+            return pagedResult;
         }
 
-        public async Task<T> GetById(int id)
+        public async Task<T> GetById(ISpecification<T> spec)
         {
-            return await Entity.FirstOrDefaultAsync(e => EF.Property<int>(e, "Id") == id);
+            return await SpecificationEvaluator<T>.GetQuery(Entity, spec).FirstOrDefaultAsync();
+        }
+
+        public async Task<int> Count()
+        {
+            return await Entity.CountAsync();
         }
 
         public async Task<bool> Save()
