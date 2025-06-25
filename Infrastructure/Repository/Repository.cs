@@ -1,5 +1,5 @@
 using Core.Interfaces;
-using Core.Models;
+using Core.Models.Pagination;
 using Core.Specifications;
 using Infrastructure.Data;
 using Microsoft.EntityFrameworkCore;

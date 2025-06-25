@@ -4,6 +4,7 @@ using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
+using Core.Models.Pagination;
 using Core.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

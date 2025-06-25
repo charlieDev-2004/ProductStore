@@ -1,5 +1,5 @@
 
-namespace Core.Models
+namespace Core.Models.Pagination
 {
     public class PagedResult<T> where T : class
     {

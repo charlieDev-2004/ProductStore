@@ -1,8 +1,4 @@
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace Core.Models
 {
@@ -17,12 +13,16 @@ namespace Core.Models
         [ForeignKey("Category")]
         public int CategoryId { get; set; }
         public Category Category { get; set; } = null!;
+        [ForeignKey("Brand")]
+        public int BrandId{ get; set; }
+        public Brand Brand { get; set; } = null!;
 
-        [Column(TypeName="varchar(800)")]
+        [Column(TypeName = "varchar(800)")]
         public string Description { get; set; } = null!;
         public int Stock { get; set; }
+        public bool Available{ get; set; }
 
-        [Column(TypeName="decimal(8,2)")]
+        [Column(TypeName = "decimal(8,2)")]
         public double Price { get; set; }
         public ICollection<Picture> Pictures { get; set; } = new List<Picture>();
         public ICollection<OrderProduct> OrdersProduct { get; set; } = new List<OrderProduct>();

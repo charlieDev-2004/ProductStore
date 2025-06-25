@@ -1,4 +1,4 @@
-using Core.Models;
+using Core.Models.Pagination;
 using Core.Specifications;
 
 namespace Core.Interfaces

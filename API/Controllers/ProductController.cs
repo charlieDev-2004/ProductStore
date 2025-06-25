@@ -3,6 +3,7 @@ using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
+using Core.Models.Pagination;
 using Core.Specifications;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -25,7 +26,7 @@ namespace API.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll([FromQuery] ProductQueryObject queryObject)
         {
-            var spec = new ProductSpecification(queryObject.Name, queryObject.CategoryId, queryObject.Description, queryObject.Price, queryObject.PageSize, queryObject.PageNumber);
+            var spec = new ProductSpecification(queryObject.Name, queryObject.CategoryId, queryObject.BrandId, queryObject.Description, queryObject.Price, queryObject.PageSize, queryObject.PageNumber);
             var productsPagedResult = await _productRepository.GetAll(spec);
 
             var pagedResult = new PagedResult<ProductDto>
@@ -91,6 +92,7 @@ namespace API.Controllers
             product.Id = id;
             product.Name = productDto.Name;
             product.CategoryId = productDto.CategoryId;
+            product.BrandId = productDto.BrandId;
             product.Description = productDto.Description;
             product.Stock = productDto.Stock;
             product.Price = productDto.Price;

@@ -13,9 +13,7 @@ namespace Core.Specifications
 
         public CategorySpecification(int id)
         : base(c => c.Id == id)
-        {
-          
-        }
+        {}
         
     }
 }

@@ -12,5 +12,8 @@ namespace Core.Specifications
             PageNumber = pageNumber.HasValue ? pageNumber.Value : 1;
             AddIncludes(o => o.OrderProducts);
         }
+
+        public OrderSpecification(int id) : base(o => o.Id == id)
+        {}
     }
 }

@@ -9,6 +9,7 @@ namespace API.DTOs.Product
     {
         public string Name { get; set; } = null!;
         public int CategoryId { get; set; }
+        public int BrandId { get; set; }
         public string Description { get; set; } = null!;
         public int Stock { get; set; }
         public double Price { get; set; }
