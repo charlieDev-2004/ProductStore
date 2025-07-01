@@ -11,7 +11,7 @@ namespace Core.Models
         
         [ForeignKey("Product")]
         public int ProductId { get; set; }
-        public Product Product { get; set; } = null!;
+        public Product Product { get; set; } 
         public int ProductCuantity{ get; set; }
     }
 }

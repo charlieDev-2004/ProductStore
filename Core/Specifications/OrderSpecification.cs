@@ -14,6 +14,17 @@ namespace Core.Specifications
         }
 
         public OrderSpecification(int id) : base(o => o.Id == id)
-        {}
+        { 
+             AddIncludes(o => o.OrderProducts);
+        }
+
+        public OrderSpecification(string userId) : base(o => o.UserId == userId)
+        { 
+            PageSize = 20;
+            PageNumber = 1;
+            AddIncludes(o => o.OrderProducts);
+        }
+        
+        
     }
 }

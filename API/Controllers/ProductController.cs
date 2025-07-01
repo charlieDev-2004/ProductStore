@@ -1,4 +1,4 @@
-using API.DTOs.Product;
+using API.DTOs.ProductDTOs;
 using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
@@ -119,12 +119,29 @@ namespace API.Controllers
             var product = await _productRepository.GetById(spec);
 
             if (product == null)
-                return NotFound(new { Message = $"El producto con el id {id} no existe"});
-            
+                return NotFound(new { Message = $"El producto con el id {id} no existe" });
+
             if (await _productRepository.Delete(product))
                 return Ok("Se ha eliminado correctamente");
-            
+
             return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
+        }
+
+        [HttpGet("ProductsFromOrder/{orderId}")]
+        public async Task<IActionResult> GetProductsFromOrder([FromRoute] int orderId, [FromQuery] int? PageSize, [FromQuery] int? PageNumber)
+        {
+            var spec = new ProductSpecification(orderId, PageSize, PageNumber);
+            var productPagedResult = await _productRepository.GetAll(spec);
+
+            var pagedResult = new PagedResult<ProductDto>
+            {
+                CurrentPage = productPagedResult.CurrentPage,
+                PageSize = productPagedResult.PageSize,
+                TotalPages = productPagedResult.TotalPages,
+                Items = _mapper.Map<List<ProductDto>>(productPagedResult.Items)
+            };
+
+            return Ok(pagedResult);
         }
     }
 }

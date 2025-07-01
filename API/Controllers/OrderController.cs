@@ -28,7 +28,7 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpGet]
-        public async Task<IActionResult> GetOrders([FromQuery]OrderQueryObject queryObject)
+        public async Task<IActionResult> GetOrders([FromQuery] OrderQueryObject queryObject)
         {
             var spec = new OrderSpecification(queryObject.UserId, queryObject.Date, queryObject.PageSize, queryObject.PageNumber);
             var orderPagedResult = await _orderRepository.GetAll(spec);
@@ -42,6 +42,34 @@ namespace API.Controllers
             };
 
             return Ok(pagedResult);
+        }
+
+        [HttpGet("OrdersFromUser")]
+        [Authorize(Roles = "User")]
+        public async Task<IActionResult> GetOrdersFromUser()
+        {
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var spec = new OrderSpecification(userId);
+            var orderPagedResult = await _orderRepository.GetAll(spec);
+
+            var pagedResult = new PagedResult<OrderDto>
+            {
+                CurrentPage = orderPagedResult.CurrentPage,
+                PageSize = orderPagedResult.PageSize,
+                TotalPages = orderPagedResult.TotalPages,
+                Items = _mapper.Map<List<OrderDto>>(orderPagedResult.Items)
+            };
+
+            return Ok(pagedResult);
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetOrderById([FromRoute] int id)
+        {
+            var spec = new OrderSpecification(id);
+            var order = _mapper.Map<OrderDto>(await _orderRepository.GetById(spec));
+            return Ok(order);
         }
 
         [Authorize(Roles = "User")]
@@ -75,8 +103,6 @@ namespace API.Controllers
 
             return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
         }
-        
-
         
     }
 }
