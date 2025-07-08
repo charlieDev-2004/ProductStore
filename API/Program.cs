@@ -6,6 +6,8 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.Filters;
 using Microsoft.IdentityModel.Tokens;
+using Infrastructure.Services;
+using Infrastructure.Settings;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -18,8 +20,19 @@ builder.Services.AddControllers().AddJsonOptions(options =>
     options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
 });
 builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
-builder.Services.AddDbContext<AppDbContext>(options => options.UseSqlServer(builder.Configuration.GetConnectionString("cadenaConexion")));
+
+builder.Services.AddDbContext<AppDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("cadenaConexion"))
+);
+
 builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
+builder.Services.Configure<EmailSettings>(
+    builder.Configuration.GetSection("EmailSettings")
+);
+
+builder.Services.AddScoped<IEmailService, EmailService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer(options =>
 {
     options.Authority = builder.Configuration["KeycloakSettings:Authority"];
@@ -64,7 +77,7 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
-
+app.UseStaticFiles();
 
 app.UseHttpsRedirection();
 

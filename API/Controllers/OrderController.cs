@@ -4,6 +4,7 @@ using API.Helpers.QueryObjects;
 using AutoMapper;
 using Core.Interfaces;
 using Core.Models;
+using Core.Models.Email;
 using Core.Models.Pagination;
 using Core.Specifications;
 using Microsoft.AspNetCore.Authorization;
@@ -17,13 +18,15 @@ namespace API.Controllers
     {
         private readonly IRepository<Order> _orderRepository;
         private readonly IRepository<Product> _productRepository;
+        private readonly IEmailService _emailService;
         private readonly IMapper _mapper;
 
-        public OrderController(IRepository<Order> orderRepository, IRepository<OrderProduct> ordersProductsRepository, IMapper mapper, IRepository<Product> productRepository)
+        public OrderController(IRepository<Order> orderRepository, IRepository<OrderProduct> ordersProductsRepository, IMapper mapper, IRepository<Product> productRepository, IEmailService emailService)
         {
             _orderRepository = orderRepository;
             _productRepository = productRepository;
             _mapper = mapper;
+            _emailService = emailService;
         }
 
         [Authorize(Roles = "Admin")]
@@ -99,8 +102,34 @@ namespace API.Controllers
             order.OrderProducts = productsOrder;
 
             if (await _orderRepository.Create(order))
-                return Ok(new { Message = "Orden creada correctamente." });
+            {
+                var email = new Email
+                {
+                    EmailReceiver = User.FindFirstValue(ClaimTypes.Email),
+                    Subject = "Email de confirmación de compra.",
+                    Message = "Su compra ha sido realizada con éxito. Gracias por elegirnos."
+                };
 
+                await _emailService.SendEmail(email);
+                return Ok(new { Message = "Orden creada correctamente." });
+            }
+                
+            return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteOrder([FromRoute] int id)
+        {
+            var spec = new OrderSpecification(id);
+            var order = await _orderRepository.GetById(spec);
+
+            if (order == null)
+                return NotFound(new { Message = $"La orden con el id {id} no existe." });
+
+            if (await _orderRepository.Delete(order))
+                return Ok(new { Message = "Orden eliminada correctamente." });
+            
             return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
         }
         

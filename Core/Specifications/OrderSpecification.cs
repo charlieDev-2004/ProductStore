@@ -22,6 +22,7 @@ namespace Core.Specifications
         { 
             PageSize = 20;
             PageNumber = 1;
+            OrderByDescending = o => o.Date;
             AddIncludes(o => o.OrderProducts);
         }
         

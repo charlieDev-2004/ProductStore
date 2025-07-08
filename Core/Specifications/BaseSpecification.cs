@@ -16,6 +16,8 @@ namespace Core.Specifications
         public Expression<Func<T, bool>> Filter { get; }
         public int PageSize { get; set; } 
         public int PageNumber { get; set; }
+        public Expression<Func<T,object>>? OrderBy { get; set; }
+        public Expression<Func<T,object>>? OrderByDescending { get; set; }
         public List<Expression<Func<T, object>>> Includes { get; } = new List<Expression<Func<T, object>>>();
 
         protected void AddIncludes(params Expression<Func<T, object>>[] includes)

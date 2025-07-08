@@ -13,6 +13,6 @@ namespace API.DTOs.ProductDTOs
         public string Description { get; set; } = null!;
         public int Stock { get; set; }
         public double Price { get; set; }
-        public ICollection<string> PicturesPaths{ get; set; } = new List<string>();
+        public ICollection<IFormFile> Images{ get; set; } = new List<IFormFile>();
     }
 }

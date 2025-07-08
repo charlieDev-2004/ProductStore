@@ -16,11 +16,13 @@ namespace API.Controllers
     {
         private readonly IRepository<Product> _productRepository;
         private readonly IMapper _mapper;
+        private readonly IWebHostEnvironment _webHostEnvironment;
 
-        public ProductController(IRepository<Product> productRepository, IMapper mapper)
+        public ProductController(IRepository<Product> productRepository, IMapper mapper, IWebHostEnvironment webHostEnvironment)
         {
             _productRepository = productRepository;
             _mapper = mapper;
+            _webHostEnvironment = webHostEnvironment;
         }
 
         [HttpGet]
@@ -54,16 +56,30 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPost]
-        public async Task<IActionResult> CreateProduct([FromBody] ProductCreateDto productDto)
+        public async Task<IActionResult> CreateProduct([FromForm] ProductCreateDto productDto)
         {
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
             List<Picture> pictureList = new List<Picture>();
 
-            foreach (var path in productDto.PicturesPaths)
+
+            foreach (var picture in productDto.Images)
             {
-                pictureList.Add(new Picture { Path = path });
+                if (picture != null && picture.Length > 0)
+                {
+                    var webRootPath = _webHostEnvironment.WebRootPath;
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(picture.FileName);
+                    var filePath = Path.Combine(webRootPath, "images", fileName);
+                    var relativePath = Path.Combine("images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await picture.CopyToAsync(stream);
+                    } 
+
+                     pictureList.Add(new Picture { Path = relativePath });
+                }
             }
 
             var product = _mapper.Map<Product>(productDto);
@@ -78,7 +94,7 @@ namespace API.Controllers
 
         [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
-        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromBody] ProductCreateDto productDto)
+        public async Task<IActionResult> UpdateProduct([FromRoute] int id, [FromForm] ProductCreateDto productDto)
         {
             var spec = new ProductSpecification(id);
             var product = await _productRepository.GetById(spec);
@@ -97,11 +113,21 @@ namespace API.Controllers
             product.Stock = productDto.Stock;
             product.Price = productDto.Price;
 
-            if (productDto.PicturesPaths.Any())
+            foreach (var picture in productDto.Images)
             {
-                foreach (var path in productDto.PicturesPaths)
+                if (picture != null && picture.Length > 0)
                 {
-                    product.Pictures.Add(new Picture { Path = path });
+                    var webRootPath = _webHostEnvironment.WebRootPath;
+                    var fileName = Guid.NewGuid().ToString() + Path.GetExtension(picture.FileName);
+                    var filePath = Path.Combine(webRootPath, "images", fileName);
+                    var relativePath = Path.Combine("images", fileName);
+
+                    using (var stream = new FileStream(filePath, FileMode.Create))
+                    {
+                        await picture.CopyToAsync(stream);
+                    } 
+
+                     product.Pictures.Add(new Picture { Path = relativePath });
                 }
             }
 
@@ -121,8 +147,18 @@ namespace API.Controllers
             if (product == null)
                 return NotFound(new { Message = $"El producto con el id {id} no existe" });
 
+            var webRootPath = _webHostEnvironment.WebRootPath;
+
+            foreach (var picture in product.Pictures)
+            {
+                if (System.IO.File.Exists(Path.Combine(webRootPath,picture.Path)))
+                {
+                    System.IO.File.Delete(Path.Combine(webRootPath,picture.Path));
+                }
+            }
+
             if (await _productRepository.Delete(product))
-                return Ok("Se ha eliminado correctamente");
+                    return Ok( new { Message = "Producto eliminado correctamente" });
 
             return StatusCode(500, new { Message = "Ha ocurrido un error al realizar la operación." });
         }
