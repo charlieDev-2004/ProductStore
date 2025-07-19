@@ -23,7 +23,7 @@ namespace API.Helpers
             CreateMap<Product, ProductDto>()
             .ForMember(dest => dest.Category, opt => opt.MapFrom(src => src.Category.Name))
             .ForMember(dest => dest.Brand, opt => opt.MapFrom(src => src.Brand.Name))
-            .ForMember(dest => dest.PicturesPaths, opt => opt.MapFrom(src => src.Pictures.Select(p => $"{baseUrl}" + p.Path.Replace("\\", "/")).ToList()));
+            .ForMember(dest => dest.PicturesPaths, opt => opt.MapFrom(src => src.Pictures.Select(p => baseUrl + p.Path.Replace("\\", "/")).ToList()));
 
             CreateMap<Order, OrderDto>()
             .ForMember(dest => dest.ProductsByOrder, opt =>
@@ -33,7 +33,6 @@ namespace API.Helpers
                         ProductId = op.ProductId,
                         Cuantity = op.ProductCuantity
                     }).ToList()));
-
         }
     }
 }

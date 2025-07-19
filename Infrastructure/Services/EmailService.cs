@@ -19,7 +19,7 @@ namespace Infrastructure.Services
         public async Task SendEmail(Email email)
         {
             var sender = _emailSettings.UserName;
-            var host =_emailSettings.Host;
+            var host = _emailSettings.Host;
             var port = _emailSettings.Port;
             var password = _emailSettings.Password;
 

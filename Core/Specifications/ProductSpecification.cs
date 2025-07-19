@@ -7,8 +7,8 @@ namespace Core.Specifications
     {
         public ProductSpecification(string? name, int? categoryId, int? brandId, string? description, double? rangePrice, int? pageSize, int? pageNumber)
         : base(p => (string.IsNullOrEmpty(name) || p.Name.ToLower().Contains(name.ToLower()))
-                    && (!categoryId.HasValue || p.CategoryId == categoryId)
-                    && (!brandId.HasValue || p.BrandId == brandId)
+                    && (!categoryId.HasValue || categoryId.Value == 0 || p.CategoryId == categoryId)
+                    && (!brandId.HasValue || brandId.Value == 0 || p.BrandId == brandId)
                     && (string.IsNullOrEmpty(description) || p.Name.ToLower().Contains(description.ToLower()))
                     && (!rangePrice.HasValue || p.Price <= rangePrice.Value)
                     && (p.Stock > 0)
