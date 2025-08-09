@@ -22,7 +22,7 @@ namespace Core.Specifications
         public ProductSpecification(int id)
         : base(p => p.Id == id)
         {
-            AddIncludes(p => p.Category, p => p.Brand, p => p.Pictures);
+            AddIncludes(p => p.Category, p => p.Brand, p => p.Pictures, p => p.Reviews);
         }
 
         public ProductSpecification(int orderId, int? pageSize, int? pageNumber)

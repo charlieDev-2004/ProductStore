@@ -16,6 +16,7 @@ namespace Infrastructure.Data
         public DbSet<OrderProduct> OrdersProducts { get; set; }
         public DbSet<Picture> Pictures { get; set; }
         public DbSet<Product> Products { get; set; }
+        public DbSet<Review> Reviews { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {

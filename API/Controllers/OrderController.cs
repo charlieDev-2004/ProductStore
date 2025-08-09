@@ -51,7 +51,7 @@ namespace API.Controllers
         [Authorize(Roles = "User")]
         public async Task<IActionResult> GetOrdersFromUser()
         {
-            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var spec = new OrderSpecification(userId);
             var orderPagedResult = await _orderRepository.GetAll(spec);
 
@@ -96,7 +96,7 @@ namespace API.Controllers
                 await _productRepository.Update(product);
             }
 
-            order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            order.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             order.Date = DateTime.Now;
             order.TotalAmount = totalAmount;
             order.OrderProducts = productsOrder;
@@ -105,7 +105,7 @@ namespace API.Controllers
             {
                 var email = new Email
                 {
-                    EmailReceiver = User.FindFirstValue(ClaimTypes.Email),
+                    EmailReceiver = User.FindFirstValue(ClaimTypes.Email)!,
                     Subject = "Email de confirmación de compra.",
                     Message = "Su compra ha sido realizada con éxito. Gracias por elegirnos."
                 };
