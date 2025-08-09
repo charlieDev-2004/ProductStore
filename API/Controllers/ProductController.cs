@@ -105,7 +105,6 @@ namespace API.Controllers
             if (!ModelState.IsValid)
                 return BadRequest(ModelState);
 
-            product.Id = id;
             product.Name = productDto.Name;
             product.CategoryId = productDto.CategoryId;
             product.BrandId = productDto.BrandId;
@@ -125,9 +124,9 @@ namespace API.Controllers
                     using (var stream = new FileStream(filePath, FileMode.Create))
                     {
                         await picture.CopyToAsync(stream);
-                    } 
+                    }
 
-                     product.Pictures.Add(new Picture { Path = relativePath });
+                    product.Pictures.Add(new Picture { Path = relativePath });
                 }
             }
 
