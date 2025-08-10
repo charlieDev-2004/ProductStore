@@ -29,7 +29,7 @@ namespace API.Controllers
             _emailService = emailService;
         }
 
-        [Authorize(Roles = "Admin")]
+        
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] OrderQueryObject queryObject)
         {

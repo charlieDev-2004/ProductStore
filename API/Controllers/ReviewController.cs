@@ -18,14 +18,12 @@ namespace API.Controllers
     public class ReviewController : ControllerBase
     {
         private readonly IRepository<Review> _reviewRepository;
-        private readonly IRepository<Product> _productRepository;
         private readonly IMapper _mapper;
 
-        public ReviewController(IRepository<Review> reviewRepository, IMapper mapper, IRepository<Product> productRepository)
+        public ReviewController(IRepository<Review> reviewRepository, IMapper mapper)
         {
             _reviewRepository = reviewRepository;
             _mapper = mapper;
-            _productRepository = productRepository;
         }
 
         [Authorize(Roles = "User")]
