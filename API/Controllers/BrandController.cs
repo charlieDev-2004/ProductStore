@@ -28,16 +28,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetAllBrands([FromQuery] BrandQueryObject queryObject)
         {
             var spec = new BrandSpecification(queryObject.Name, queryObject.PageSize, queryObject.PageNumber);
-            var brandPagedResult = await _brandRepository.GetAll(spec);
-
-            var pagedResult = new PagedResult<BrandDto>
-            {
-                CurrentPage = brandPagedResult.CurrentPage,
-                PageSize = brandPagedResult.PageSize,
-                TotalPages = brandPagedResult.TotalPages,
-                Items = _mapper.Map<List<BrandDto>>(brandPagedResult.Items)
-            };
-
+            var pagedResult = _mapper.Map<PagedResult<BrandDto>>(await _brandRepository.GetAll(spec));
             return Ok(pagedResult);
         }
 

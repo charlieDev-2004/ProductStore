@@ -29,21 +29,12 @@ namespace API.Controllers
             _emailService = emailService;
         }
 
-        
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> GetOrders([FromQuery] OrderQueryObject queryObject)
         {
             var spec = new OrderSpecification(queryObject.UserId, queryObject.Date, queryObject.PageSize, queryObject.PageNumber);
-            var orderPagedResult = await _orderRepository.GetAll(spec);
-
-            var pagedResult = new PagedResult<OrderDto>
-            {
-                CurrentPage = orderPagedResult.CurrentPage,
-                PageSize = orderPagedResult.PageSize,
-                TotalPages = orderPagedResult.TotalPages,
-                Items = _mapper.Map<List<OrderDto>>(orderPagedResult.Items)
-            };
-
+            var pagedResult = _mapper.Map<PagedResult<OrderDto>>(await _orderRepository.GetAll(spec));
             return Ok(pagedResult);
         }
 
@@ -53,16 +44,7 @@ namespace API.Controllers
         {
             string userId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
             var spec = new OrderSpecification(userId);
-            var orderPagedResult = await _orderRepository.GetAll(spec);
-
-            var pagedResult = new PagedResult<OrderDto>
-            {
-                CurrentPage = orderPagedResult.CurrentPage,
-                PageSize = orderPagedResult.PageSize,
-                TotalPages = orderPagedResult.TotalPages,
-                Items = _mapper.Map<List<OrderDto>>(orderPagedResult.Items)
-            };
-
+            var pagedResult = _mapper.Map<PagedResult<OrderDto>>(await _orderRepository.GetAll(spec));
             return Ok(pagedResult);
         }
 

@@ -29,16 +29,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetAll([FromQuery] ProductQueryObject queryObject)
         {
             var spec = new ProductSpecification(queryObject.Name, queryObject.CategoryId, queryObject.BrandId, queryObject.Description, queryObject.Price, queryObject.PageSize, queryObject.PageNumber);
-            var productsPagedResult = await _productRepository.GetAll(spec);
-
-            var pagedResult = new PagedResult<ProductDto>
-            {
-                CurrentPage = productsPagedResult.CurrentPage,
-                PageSize = productsPagedResult.PageSize,
-                TotalPages = productsPagedResult.TotalPages,
-                Items = _mapper.Map<List<ProductDto>>(productsPagedResult.Items)
-            };
-
+            var pagedResult = _mapper.Map<PagedResult<ProductDto>>(await _productRepository.GetAll(spec));
             return Ok(pagedResult);
         }
 
@@ -62,7 +53,6 @@ namespace API.Controllers
                 return BadRequest(ModelState);
 
             List<Picture> pictureList = new List<Picture>();
-
 
             foreach (var picture in productDto.Images)
             {

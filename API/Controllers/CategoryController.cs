@@ -27,16 +27,7 @@ namespace API.Controllers
         public async Task<IActionResult> GetCategories([FromQuery] CategoryQueryObject queryObject)
         {
             var spec = new CategorySpecification(queryObject.Name, queryObject.PageNumber, queryObject.PageSize);
-            var categoryPagedResult = await _categoryRepository.GetAll(spec);
-
-            var pagedResult = new PagedResult<CategoryDto>
-            {
-                CurrentPage = categoryPagedResult.CurrentPage,
-                PageSize = categoryPagedResult.PageSize,
-                TotalPages = categoryPagedResult.TotalPages,
-                Items = _mapper.Map<List<CategoryDto>>(categoryPagedResult.Items),
-            };
-
+            var pagedResult = _mapper.Map<PagedResult<CategoryDto>>(await _categoryRepository.GetAll(spec));
             return Ok(pagedResult);
         }
 
