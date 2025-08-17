@@ -35,6 +35,7 @@ namespace API.Controllers
 
             var review = _mapper.Map<Review>(reviewDto);
             review.UserId = User.FindFirstValue(ClaimTypes.NameIdentifier)!;
+            review.UserName = User.FindFirstValue(ClaimTypes.Name)!;
             review.CreatedAt = DateTime.Now;
 
             if (await _reviewRepository.Create(review))

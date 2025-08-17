@@ -10,6 +10,9 @@ namespace Core.Models
         [Column(TypeName = "varchar(100)")]
         public string UserId { get; set; } = null!;
 
+         [Column(TypeName = "varchar(100)")]
+        public string UserName { get; set; } = null!;
+
         [ForeignKey("Product")]
         public int ProductId { get; set; }
         public Product Product { get; set; } = null!;
